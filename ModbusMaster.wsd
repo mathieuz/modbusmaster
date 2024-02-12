@@ -1,0 +1,14 @@
+@startuml modbusmaster
+    class modbuslib {
+        - timeoutMs : uint
+        - serial : HardwareSerial
+
+        + readCoils (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH) : *uint8_t
+        + readDiscreteInputs (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH) : *uint8_t
+        + readHoldingRegisters (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH) : *uint8_t
+        + readInputRegisters (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH) : *uint8_t
+
+        + writeMultipleCoils (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH, *uint8_t data) : 
+        + writeMultipleCoils (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH, *uint8_t data) :
+    }
+@enduml
