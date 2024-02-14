@@ -77,6 +77,12 @@ public:
 
                 Serial.print("Byte Data: ");
                 Serial.println(resposta[3], HEX);
+
+                Serial.print("CRC: ");
+                Serial.println(resposta[4], HEX);
+
+                Serial.print("CRC: ");
+                Serial.println(resposta[5], HEX);
                 */
 
                 //Verifica os valores do byte data e executa uma ação específica.
