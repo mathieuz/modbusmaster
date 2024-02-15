@@ -43,12 +43,14 @@ public:
         uint8_t crcHigh = 0;
         uint8_t crcLow = 0;
         
+        //Calculando CRC da requisição
         uint8_t arrBuffer[6] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow};
-        
+
         crc = this->calcCRC(arrBuffer, 6); //6 referente ao comprimento da estrutura de requisição.
         crcHigh = crc & 0x00FF;
         crcLow = (crc & 0xFF00) >> 8;
 
+        //Enviando requisição + CRC
         Serial.write(deviceAddress);
         Serial.write(functionCode);
         Serial.write(startAddressHigh);
@@ -58,47 +60,47 @@ public:
         Serial.write(crcHigh);
         Serial.write(crcLow);
 
+        //Determinando a quantidade de data bytes a serem recebidos.
+        uint16_t length = (lengthHigh << 8) + lengthLow;
+        uint16_t numReceivedBytes = length <= 7 ? 1 : (int)(length / 8) + 1;
+
+        //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
+        uint16_t bufferLength = numReceivedBytes + 5;
+
+        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
+        Serial.println("Aguardando resposta...\n");
+
         while (true) {
             if (Serial.available() > 0) {
-                uint8_t resposta[6];
+                uint8_t buffer[bufferLength];
 
-                Serial.readBytes(resposta, 6);
+                //Preenchendo o buffer com a resposta da requisição.
+                Serial.readBytes(buffer, bufferLength);
 
                 //Exibindo todos os bytes da resposta:
                 /*
                 Serial.print("Endereço Device: ");
-                Serial.println(resposta[0], HEX);
+                Serial.println(buffer[0], HEX);
 
                 Serial.print("Código Função: ");
-                Serial.println(resposta[1], HEX);
+                Serial.println(buffer[1], HEX);
 
                 Serial.print("Byte Count: ");
-                Serial.println(resposta[2], HEX);
+                Serial.println(buffer[2], HEX);
 
                 Serial.print("Byte Data: ");
-                Serial.println(resposta[3], HEX);
+                Serial.println(buffer[3], HEX);
 
                 Serial.print("CRC: ");
-                Serial.println(resposta[4], HEX);
+                Serial.println(buffer[4], HEX);
 
                 Serial.print("CRC: ");
-                Serial.println(resposta[5], HEX);
+                Serial.println(buffer[5], HEX);
                 */
 
-                //Verifica os valores do byte data e executa uma ação específica.
-
-                if (resposta[3] == 0x05) {  //Acende o verde.
-                    digitalWrite(PA0, HIGH);
-                    digitalWrite(PA1, LOW);
-
-                } else if (resposta[3] == 0x07) { //Acende o azul.
-                    digitalWrite(PA0, LOW);
-                    digitalWrite(PA1, HIGH);
-
-                } else { //Se não, acende todos.
-                    digitalWrite(PA0, HIGH);
-                    digitalWrite(PA1, HIGH);
-                    
+                for (int i = 0; i < bufferLength; i++) {
+                    Serial.println(buffer[i]);
                 }
 
                 break;
