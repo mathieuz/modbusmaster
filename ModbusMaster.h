@@ -60,9 +60,22 @@ public:
         Serial.write(crcHigh);
         Serial.write(crcLow);
 
-        //Determinando a quantidade de data bytes a serem recebidos.
+        //Recuperando quantidade de memória a ser lida.
         uint16_t length = (lengthHigh << 8) + lengthLow;
-        uint16_t numReceivedBytes = length <= 7 ? 1 : (int)(length / 8) + 1;
+
+        //Calculando quantos data bytes virá na resposta.
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = 1;
+
+        } else if (length % 8 == 0) {
+            numReceivedBytes = (int)(length / 8);
+
+        } else {
+            numReceivedBytes = (int)(length / 8) + 1;
+
+        }
 
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
