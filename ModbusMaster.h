@@ -104,11 +104,26 @@ public:
                     arrResBuffer[i] = buffer[i];
                 }
 
-                Serial.println("Array do buffer de resposta (sem o CRC):");
+                //Calculando CRC da resposta.
+                uint16_t crcResCalc = this->calcCRC(arrResBuffer, sizeof(arrResBuffer));
 
-                //Espera-se que arrResBuffer tenha todos os itens do buffer de resposta (menos os itens referente ao CRC).
-                for (uint i = 0; i < sizeof(arrResBuffer); i++) {
-                    Serial.println(arrResBuffer[i], HEX);
+                uint8_t crcCalcLow = crcResCalc & 0x00FF;
+                uint8_t crcCalcHigh = (crcResCalc & 0xFF00) >> 8;
+                uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
+
+                Serial.println("CRC da Resposta: ");
+                Serial.println(crcRes, HEX);
+
+                Serial.println("CRC Calculado: ");
+                Serial.println(crcCalc, HEX);
+
+                //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
+                if (crcCalc == crcRes) {
+                    Serial.println("O CRC Calculado e o CRC da resposta são iguais. Não houve erros ou incosistências nos dados recebidos.");
+
+                } else {
+                    Serial.println("O CRC calculado e o CRC da resposta não batem.");
+                    
                 }
 
                 break;
