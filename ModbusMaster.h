@@ -99,6 +99,7 @@ public:
                 //Calculando CRC da Resposta:
                 uint8_t arrResBuffer[bufferLength - 2];             //Recebe os itens do buffer de resposta (tirando os bytes do crc).
 
+
                 break;
             }
         }
