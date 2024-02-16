@@ -108,14 +108,12 @@ public:
 
                 //Espera-se que arrResBuffer tenha todos os itens do buffer de resposta (menos os itens referente ao CRC).
                 for (uint i = 0; i < sizeof(arrResBuffer); i++) {
-                    Serial.println(arrReqBuffer[i], HEX);
+                    Serial.println(arrResBuffer[i], HEX);
                 }
-
 
                 break;
             }
         }
-
     }
 
     /*
