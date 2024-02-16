@@ -96,8 +96,20 @@ public:
                 uint8_t crcResLow = buffer[bufferLength - 2];       //Penúltimo byte do buffer de resposta.
                 uint16_t crcRes = (crcResHigh << 8) + crcResLow;    //O CRC enviado da resposta em 16 bits.
 
-                //Calculando CRC da Resposta:
-                uint8_t arrResBuffer[bufferLength - 2];             //Recebe os itens do buffer de resposta (tirando os bytes do crc).
+                //Recebe os itens do buffer de resposta.
+                uint8_t arrResBuffer[bufferLength - 2];
+
+                //Preenchendo arrResBuffer com os itens do buffer de resposta (tirando os dois últimos itens, que são bytes do crc da resposta).
+                for (uint i = 0; i < sizeof(arrResBuffer); i++) {
+                    arrResBuffer[i] = buffer[i];
+                }
+
+                Serial.println("Array do buffer de resposta (sem o CRC):");
+
+                //Espera-se que arrResBuffer tenha todos os itens do buffer de resposta (menos os itens referente ao CRC).
+                for (uint i = 0; i < sizeof(arrResBuffer); i++) {
+                    Serial.println(arrReqBuffer[i], HEX);
+                }
 
 
                 break;
