@@ -39,16 +39,16 @@ public:
     }
 
     void readCoilFunction01(uint8_t deviceAddress, uint8_t functionCode, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
-        uint16_t crc = 0;
-        uint8_t crcHigh = 0;
-        uint8_t crcLow = 0;
+        uint16_t crcReq = 0;
+        uint8_t crcReqHigh = 0;
+        uint8_t crcReqLow = 0;
         
         //Calculando CRC da requisição
-        uint8_t arrBuffer[6] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow};
+        uint8_t arrReqBuffer[6] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow};
 
-        crc = this->calcCRC(arrBuffer, 6); //6 referente ao comprimento da estrutura de requisição.
-        crcHigh = crc & 0x00FF;
-        crcLow = (crc & 0xFF00) >> 8;
+        crcReq = this->calcCRC(arrReqBuffer, 6); //6 referente ao comprimento da estrutura de requisição.
+        crcReqHigh = crcReq & 0x00FF;
+        crcReqLow = (crcReq & 0xFF00) >> 8;
 
         //Enviando requisição + CRC
         Serial.write(deviceAddress);
@@ -57,8 +57,8 @@ public:
         Serial.write(startAddressLow);
         Serial.write(lengthHigh);
         Serial.write(lengthLow);
-        Serial.write(crcHigh);
-        Serial.write(crcLow);
+        Serial.write(crcReqHigh);
+        Serial.write(crcReqLow);
 
         //Recuperando quantidade de memória a ser lida.
         uint16_t length = (lengthHigh << 8) + lengthLow;
@@ -91,30 +91,13 @@ public:
                 //Preenchendo o buffer com a resposta da requisição.
                 Serial.readBytes(buffer, bufferLength);
 
-                //Exibindo todos os bytes da resposta:
-                /*
-                Serial.print("Endereço Device: ");
-                Serial.println(buffer[0], HEX);
+                //Recuperando o CRC da resposta:
+                uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
+                uint8_t crcResLow = buffer[bufferLength - 2];       //Penúltimo byte do buffer de resposta.
+                uint16_t crcRes = (crcResHigh << 8) + crcResLow;    //O CRC enviado da resposta em 16 bits.
 
-                Serial.print("Código Função: ");
-                Serial.println(buffer[1], HEX);
-
-                Serial.print("Byte Count: ");
-                Serial.println(buffer[2], HEX);
-
-                Serial.print("Byte Data: ");
-                Serial.println(buffer[3], HEX);
-
-                Serial.print("CRC: ");
-                Serial.println(buffer[4], HEX);
-
-                Serial.print("CRC: ");
-                Serial.println(buffer[5], HEX);
-                */
-
-                for (int i = 0; i < bufferLength; i++) {
-                    Serial.println(buffer[i]);
-                }
+                //Calculando CRC da Resposta:
+                uint8_t arrResBuffer[bufferLength - 2];             //Recebe os itens do buffer de resposta (tirando os bytes do crc).
 
                 break;
             }
