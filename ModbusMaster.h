@@ -119,15 +119,19 @@ public:
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
                 if (crcCalc == crcRes) {
-                    Serial.println("O CRC Calculado e o CRC da resposta são iguais. Não houve erros ou incosistências nos dados recebidos.");
+                    uint8_t arrDataByte[numReceivedBytes];
 
-                } else {
-                    Serial.println("O CRC calculado e o CRC da resposta não batem.");
-                    
-                }
+                    uint countIndex = 0;
+                    for (uint i = 3; i < sizeof(arrResBuffer); i++) {
+                      arrDataByte[countIndex] = arrResBuffer[i];
+                      countIndex++;
 
-                for (uint i = 0; i < bufferLength; i++) {
-                    Serial.println(buffer[i], HEX);
+                    }
+
+                    Serial.println("Data Bytes: ");
+                    for (uint i = 0; i < sizeof(arrDataByte); i++) {
+                      Serial.println(arrDataByte[i], HEX);
+                    }
                 }
 
                 break;
