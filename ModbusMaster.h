@@ -96,8 +96,35 @@ public:
                 uint8_t crcResLow = buffer[bufferLength - 2];       //Penúltimo byte do buffer de resposta.
                 uint16_t crcRes = (crcResHigh << 8) + crcResLow;    //O CRC enviado da resposta em 16 bits.
 
-                //Calculando CRC da Resposta:
-                uint8_t arrResBuffer[bufferLength - 2];             //Recebe os itens do buffer de resposta (tirando os bytes do crc).
+                //Recebe os itens do buffer de resposta.
+                uint8_t arrResBuffer[bufferLength - 2];
+
+                //Preenchendo arrResBuffer com os itens do buffer de resposta (tirando os dois últimos itens, que são bytes do crc da resposta).
+                for (uint i = 0; i < sizeof(arrResBuffer); i++) {
+                    arrResBuffer[i] = buffer[i];
+                }
+
+                //Calculando CRC da resposta.
+                uint16_t crcResCalc = this->calcCRC(arrResBuffer, sizeof(arrResBuffer));
+
+                uint8_t crcCalcLow = crcResCalc & 0x00FF;
+                uint8_t crcCalcHigh = (crcResCalc & 0xFF00) >> 8;
+                uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
+
+                Serial.println("CRC da Resposta: ");
+                Serial.println(crcRes, HEX);
+
+                Serial.println("CRC Calculado: ");
+                Serial.println(crcCalc, HEX);
+
+                //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
+                if (crcCalc == crcRes) {
+                    Serial.println("O CRC Calculado e o CRC da resposta são iguais. Não houve erros ou incosistências nos dados recebidos.");
+
+                } else {
+                    Serial.println("O CRC calculado e o CRC da resposta não batem.");
+                    
+                }
 
                 for (uint i = 0; i < bufferLength; i++) {
                     Serial.println(buffer[i], HEX);
@@ -106,7 +133,6 @@ public:
                 break;
             }
         }
-
     }
 
     /*
