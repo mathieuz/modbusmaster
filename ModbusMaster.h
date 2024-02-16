@@ -38,7 +38,7 @@ public:
         this->timeout = timeout;
     }
 
-    void readCoilFunction01(uint8_t deviceAddress, uint8_t functionCode, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint8_t* readCoilFunction01(uint8_t deviceAddress, uint8_t functionCode, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         uint16_t crcReq = 0;
         uint8_t crcReqHigh = 0;
         uint8_t crcReqLow = 0;
@@ -111,23 +111,33 @@ public:
                 uint8_t crcCalcHigh = (crcResCalc & 0xFF00) >> 8;
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
+                /*
                 Serial.println("CRC da Resposta: ");
                 Serial.println(crcRes, HEX);
 
                 Serial.println("CRC Calculado: ");
                 Serial.println(crcCalc, HEX);
+                */
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
                 if (crcCalc == crcRes) {
-                    Serial.println("O CRC Calculado e o CRC da resposta são iguais. Não houve erros ou incosistências nos dados recebidos.");
+                    uint8_t* arrDataByte = new uint8_t[numReceivedBytes];
 
-                } else {
-                    Serial.println("O CRC calculado e o CRC da resposta não batem.");
-                    
-                }
+                    uint countIndex = 0;
+                    for (uint i = 3; i < sizeof(arrResBuffer); i++) {
+                      arrDataByte[countIndex] = arrResBuffer[i];
+                      countIndex++;
 
-                for (uint i = 0; i < bufferLength; i++) {
-                    Serial.println(buffer[i], HEX);
+                    }
+
+                    /*
+                    Serial.println("Data Bytes: ");
+                    for (uint i = 0; i < sizeof(arrDataByte); i++) {
+                      Serial.println(arrDataByte[i], HEX);
+                    }
+                    */
+
+                    return arrDataByte;
                 }
 
                 break;

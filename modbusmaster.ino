@@ -21,9 +21,15 @@ void setup() {
 }
 
 void loop() {
-    delay(3000);
+    delay(5000);
 
     //Requisição/pergunta do mestre.
-    ms.readCoilFunction01(deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
+    uint8_t* arr = ms.readCoilFunction01(deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
 
+    Serial.println("Data Bytes:");
+    for (uint i = 0; i <= sizeof(arr); i++) {
+        Serial.println(arr[i], HEX);
+    }
+
+    delete[] arr;
 }
