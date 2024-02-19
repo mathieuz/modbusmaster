@@ -29,7 +29,7 @@ void loop() {
 
     Serial.println("Data Bytes:");
     for (uint i = 0; i < length; i++) {
-        Serial.println(arr[i], HEX);
+        Serial.println(arr[i], HEX); 
     }
 
     delete[] arr;

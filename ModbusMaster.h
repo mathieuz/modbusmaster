@@ -169,6 +169,6 @@ public:
         return numReceivedBytes;
     }
     
-};
+}; 
 
 #endif
