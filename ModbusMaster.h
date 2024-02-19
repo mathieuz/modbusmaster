@@ -133,6 +133,10 @@ public:
         }
     }
 
+    void readHoldingRegistersFunction03(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+        const uint8_t functionCode = 0x03;
+    }
+
     /*
     uint8_t* testeRetornoArray(uint size) {
         uint8_t* arr = new uint8_t[size];
