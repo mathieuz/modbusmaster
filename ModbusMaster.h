@@ -164,6 +164,42 @@ public:
         Serial.println("Serial.");
     }
     */
+
+    uint16_t getNumberReceivedBytes(uint16_t length) {
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = 1;
+
+        } else if (length % 8 == 0) {
+            numReceivedBytes = (int)(length / 8);
+
+        } else {
+            numReceivedBytes = (int)(length / 8) + 1;
+
+        }
+
+        return numReceivedBytes;
+
+    }
+
+    uint16_t getNumberReceivedBytes(uint8_t lengthHigh, uint8_t lengthLow) {
+        uint16_t length = (lengthHigh << 8) + lengthLow;
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = 1;
+
+        } else if (length % 8 == 0) {
+            numReceivedBytes = (int)(length / 8);
+
+        } else {
+            numReceivedBytes = (int)(length / 8) + 1;
+
+        }
+
+        return numReceivedBytes;
+    }
     
 };
 

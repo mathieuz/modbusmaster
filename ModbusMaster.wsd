@@ -10,5 +10,6 @@
 
         + writeMultipleCoils (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH, *uint8_t data) : 
         + writeMultipleCoils (deviceAddress, registerAddressH, registerAddressL, lengthL, lengthH, *uint8_t data) :
+        + getNumberOfReceivedBytes (lengthHigh, lengthLow);
     }
 @enduml
