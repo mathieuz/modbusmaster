@@ -63,7 +63,7 @@ public:
         Serial.write(crcReqLow);
 
         //Calculando quantos data bytes virá na resposta.
-        uint16_t numReceivedBytes = this->getNumberReceivedBytes(lengthHigh, lengthLow);
+        uint16_t numReceivedBytes = this->getNumDataBytes8Bits(lengthHigh, lengthLow);
 
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
@@ -135,6 +135,37 @@ public:
 
     void readHoldingRegistersFunction03(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x03;
+
+        uint16_t crcReq = 0;
+        uint8_t crcReqHigh = 0;
+        uint8_t crcReqLow = 0;
+        
+        //Calculando CRC da requisição
+        uint8_t arrReqBuffer[6] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow};
+
+        crcReq = this->calcCRC(arrReqBuffer, 6); //6 referente ao comprimento da estrutura de requisição.
+        crcReqLow = crcReq & 0x00FF;
+        crcReqHigh = (crcReq & 0xFF00) >> 8;
+
+        //Enviando requisição + CRC
+        Serial.write(deviceAddress);
+        Serial.write(functionCode);
+        Serial.write(startAddressHigh);
+        Serial.write(startAddressLow);
+        Serial.write(lengthHigh);
+        Serial.write(lengthLow);
+        Serial.write(crcReqLow);
+        Serial.write(crcReqHigh);
+
+        //Calculando quantos data bytes virá na resposta.
+        uint16_t numReceivedBytes = this->getNumDataBytes16Bits(lengthHigh, lengthLow);
+
+        //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
+        uint16_t bufferLength = numReceivedBytes + 5;
+
+        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
+        Serial.println("Aguardando resposta...\n");
     }
 
     /*
@@ -155,7 +186,7 @@ public:
     }
     */
 
-    uint16_t getNumberReceivedBytes(uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t getNumDataBytes8Bits(uint8_t lengthHigh, uint8_t lengthLow) {
         uint16_t length = (lengthHigh << 8) + lengthLow;
         uint16_t numReceivedBytes;
 
@@ -167,6 +198,24 @@ public:
 
         } else {
             numReceivedBytes = (int)(length / 8) + 1;
+
+        }
+
+        return numReceivedBytes;
+    }
+
+    uint16_t getNumDataBytes16Bits(uint8_t lengthHigh, uint8_t lengthLow) {
+        uint16_t length = (lengthHigh << 8) + lengthLow;
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = length * 2;
+
+        } else if (length % 16 == 0) {
+            numReceivedBytes = (int)(length / 16) * 2;
+
+        } else {
+            numReceivedBytes = ((int)(length / 16) + 1) * 2;
 
         }
 
