@@ -23,7 +23,7 @@ void loop() {
     delay(5000);
 
     //Requisição/pergunta do mestre.
-    uint8_t* arr = ms.readCoilFunction01(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
+    uint8_t* arr = ms.readCoilsFunction01(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
 
     uint16_t length = ms.getNumberReceivedBytes(lengthHigh, lengthLow); //Número de bytes a serem recebidos;
 

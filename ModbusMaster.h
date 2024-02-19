@@ -38,7 +38,7 @@ public:
         this->timeout = timeout;
     }
 
-    uint8_t* readCoilFunction01(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint8_t* readCoilsFunction01(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x01;
 
         uint16_t crcReq = 0;
