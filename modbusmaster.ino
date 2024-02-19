@@ -32,5 +32,5 @@ void loop() {
         Serial.println(arr[i], HEX); 
     }
 
-    delete[] arr;
+    delete[] arr; 
 }
