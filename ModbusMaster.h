@@ -323,24 +323,6 @@ public:
         }
     }
 
-    /*
-    uint8_t* testeRetornoArray(uint size) {
-        uint8_t* arr = new uint8_t[size];
-
-        for (uint i = 0; i < size; i++) {
-            arr[i] = (0x00 << 4) + i;
-        }
-
-        return arr;
-    }
-    */
-
-    /*
-    void testeSerial() {
-        Serial.println("Serial.");
-    }
-    */
-
     uint16_t getNumDataBytes8Bits(uint8_t lengthHigh, uint8_t lengthLow) {
         uint16_t length = (lengthHigh << 8) + lengthLow;
         uint16_t numReceivedBytes;
