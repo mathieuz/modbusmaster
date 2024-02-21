@@ -32,6 +32,42 @@ private:
 
     }
 
+    uint16_t getNumDataBytes8Bits(uint8_t lengthHigh, uint8_t lengthLow) {
+        uint16_t length = (lengthHigh << 8) + lengthLow;
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = 1;
+
+        } else if (length % 8 == 0) {
+            numReceivedBytes = (int)(length / 8);
+
+        } else {
+            numReceivedBytes = (int)(length / 8) + 1;
+
+        }
+
+        return numReceivedBytes;
+    }
+
+    uint16_t getNumDataBytes16Bits(uint8_t lengthHigh, uint8_t lengthLow) {
+        uint16_t length = (lengthHigh << 8) + lengthLow;
+        uint16_t numReceivedBytes;
+
+        if (length <= 7) { 
+            numReceivedBytes = length * 2;
+
+        } else if (length % 16 == 0) {
+            numReceivedBytes = (int)(length / 16) * 2;
+
+        } else {
+            numReceivedBytes = ((int)(length / 16) + 1) * 2;
+
+        }
+
+        return numReceivedBytes;
+    }
+
 public:
     ModbusMaster(/*HardwareSerial serial,*/ uint timeout) {
         //this->serial = &serial;
@@ -133,7 +169,7 @@ public:
         }
     }
 
-    uint8_t* readHoldingRegistersFunction03(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t* readHoldingRegistersFunction03(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x03;
 
         uint16_t crcReq = 0;
@@ -204,7 +240,9 @@ public:
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
                 if (crcCalc == crcRes) {
-                    uint8_t* arrDataByte = new uint8_t[numReceivedBytes];
+
+                    //Os databytes virão inicialmente em um valor de 8 bits.
+                    uint8_t arrDataByte[numReceivedBytes];
 
                     uint countIndex = 0;
                     for (uint i = 3; i < sizeof(arrResBuffer); i++) {
@@ -213,14 +251,19 @@ public:
 
                     }
 
-                    /*
-                    Serial.println("Data Bytes: ");
-                    for (uint i = 0; i < sizeof(arrDataByte); i++) {
-                      Serial.println(arrDataByte[i], HEX);
-                    }
-                    */
+                    //Convertendo os valores para um array de 16 bits (2 bytes).
+                    uint arrDataByte16BitsLength = numReceivedBytes / 2;
+                    uint16_t* arrDataByte16Bits = new uint16_t[arrDataByte16BitsLength];
 
-                    return arrDataByte;
+                    countIndex = 0;
+                    for (uint i = 0; i < numReceivedBytes; i += 2) {
+                        arrDataByte16Bits[countIndex] = (arrDataByte[i] << 8) + arrDataByte[i + 1];
+                        countIndex++;
+                    }
+
+                    //Retornando array de 16 bits.
+                    return arrDataByte16Bits;
+
                 }
 
                 break;
@@ -228,7 +271,7 @@ public:
         }
     }
 
-    uint8_t* readInputRegistersFunction04(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t* readInputRegistersFunction04(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x04;
 
         uint16_t crcReq = 0;
@@ -299,7 +342,9 @@ public:
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
                 if (crcCalc == crcRes) {
-                    uint8_t* arrDataByte = new uint8_t[numReceivedBytes];
+
+                    //Os databytes virão inicialmente em um valor de 8 bits.
+                    uint8_t arrDataByte[numReceivedBytes];
 
                     uint countIndex = 0;
                     for (uint i = 3; i < sizeof(arrResBuffer); i++) {
@@ -308,14 +353,19 @@ public:
 
                     }
 
-                    /*
-                    Serial.println("Data Bytes: ");
-                    for (uint i = 0; i < sizeof(arrDataByte); i++) {
-                      Serial.println(arrDataByte[i], HEX);
-                    }
-                    */
+                    //Convertendo os valores para um array de 16 bits (2 bytes).
+                    uint arrDataByte16BitsLength = numReceivedBytes / 2;
+                    uint16_t* arrDataByte16Bits = new uint16_t[arrDataByte16BitsLength];
 
-                    return arrDataByte;
+                    countIndex = 0;
+                    for (uint i = 0; i < numReceivedBytes; i += 2) {
+                        arrDataByte16Bits[countIndex] = (arrDataByte[i] << 8) + arrDataByte[i + 1];
+                        countIndex++;
+                    }
+
+                    //Retornando array de 16 bits.
+                    return arrDataByte16Bits;
+
                 }
 
                 break;
@@ -323,42 +373,13 @@ public:
         }
     }
 
-    uint16_t getNumDataBytes8Bits(uint8_t lengthHigh, uint8_t lengthLow) {
-        uint16_t length = (lengthHigh << 8) + lengthLow;
-        uint16_t numReceivedBytes;
-
-        if (length <= 7) { 
-            numReceivedBytes = 1;
-
-        } else if (length % 8 == 0) {
-            numReceivedBytes = (int)(length / 8);
-
-        } else {
-            numReceivedBytes = (int)(length / 8) + 1;
-
-        }
-
-        return numReceivedBytes;
+    uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
+        return this->getNumDataBytes8Bits(lengthHigh, lengthLow);
     }
 
-    uint16_t getNumDataBytes16Bits(uint8_t lengthHigh, uint8_t lengthLow) {
-        uint16_t length = (lengthHigh << 8) + lengthLow;
-        uint16_t numReceivedBytes;
-
-        if (length <= 7) { 
-            numReceivedBytes = length * 2;
-
-        } else if (length % 16 == 0) {
-            numReceivedBytes = (int)(length / 16) * 2;
-
-        } else {
-            numReceivedBytes = ((int)(length / 16) + 1) * 2;
-
-        }
-
-        return numReceivedBytes;
+    uint getLength16BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
+        return this->getNumDataBytes16Bits(lengthHigh, lengthLow) / 2; 
     }
-    
 };
 
 #endif
