@@ -74,7 +74,7 @@ public:
         this->timeout = timeout;
     }
 
-    uint8_t* readCoilsFunction01(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint8_t* readCoils(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x01;
 
         uint16_t crcReq = 0;
@@ -169,7 +169,7 @@ public:
         }
     }
 
-    uint16_t* readHoldingRegistersFunction03(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t* readHoldingRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x03;
 
         uint16_t crcReq = 0;
@@ -271,7 +271,7 @@ public:
         }
     }
 
-    uint16_t* readInputRegistersFunction04(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t* readInputRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x04;
 
         uint16_t crcReq = 0;
