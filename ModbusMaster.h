@@ -373,6 +373,28 @@ public:
         }
     }
 
+    void writeMultipleRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow, uint16_t dataBytes[], uint dataBytesLength) {
+        const uint8_t functionCode = 0x16;
+
+        //Convertendo os elementos da array de 16 bits para 8 bits. 
+        uint lengthArrDataBytes8Bits = dataBytesLength * 2;
+        uint8_t arrDataBytes8Bits[lengthArrDataBytes8Bits];
+
+        uint countIndex = 0;
+        for (uint i = 0; i < lengthArrDataBytes8Bits; i++) {
+            arrDataBytes8Bits[countIndex] = (dataBytes[i] & 0xFF00) >> 8;
+            countIndex++;
+            arrDataBytes8Bits[countIndex] = dataBytes[i] & 0x00FF;
+            countIndex++;
+        }
+
+        uint lengthArrReqBuffer = lengthArrDataBytes8Bits + 7; //Dimensionando o tamanho da array da requisição. Itens do array de databytes + 7 (deviceAddress, functionCode, startAddressHigh, startAddressLow, número de databytes para seguir.)
+
+        Serial.println("Tamanho do buffer de requisição:");
+        Serial.println(lengthArrReqBuffer);
+
+    }
+
     uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
         return this->getNumDataBytes8Bits(lengthHigh, lengthLow);
     }

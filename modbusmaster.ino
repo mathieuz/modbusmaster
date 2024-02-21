@@ -22,13 +22,10 @@ void setup() {
 void loop() {
     delay(5000);
 
-    //Requisição/pergunta do mestre.
-    uint8_t* arr = ms.readCoils(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
-    uint length = ms.getLength8BitDataByte(lengthHigh, lengthLow);
+    uint dataBytesLength = 3;
+    uint16_t arrDataBytes[dataBytesLength] = {0xAE41, 0x5652, 0x4340};
 
-    for (uint i = 0; i < length; i++) {
-        Serial.println(arr[i], HEX);
-    }
+    ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength);
 
-    delete[] arr;
+    delete[] arrDataBytes;
 }
