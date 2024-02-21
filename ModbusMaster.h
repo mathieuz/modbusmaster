@@ -271,7 +271,7 @@ public:
         }
     }
 
-    uint8_t* readInputRegistersFunction04(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
+    uint16_t* readInputRegistersFunction04(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
         const uint8_t functionCode = 0x04;
 
         uint16_t crcReq = 0;
@@ -342,7 +342,9 @@ public:
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
                 if (crcCalc == crcRes) {
-                    uint8_t* arrDataByte = new uint8_t[numReceivedBytes];
+
+                    //Os databytes virão inicialmente em um valor de 8 bits.
+                    uint8_t arrDataByte[numReceivedBytes];
 
                     uint countIndex = 0;
                     for (uint i = 3; i < sizeof(arrResBuffer); i++) {
@@ -351,14 +353,19 @@ public:
 
                     }
 
-                    /*
-                    Serial.println("Data Bytes: ");
-                    for (uint i = 0; i < sizeof(arrDataByte); i++) {
-                      Serial.println(arrDataByte[i], HEX);
-                    }
-                    */
+                    //Convertendo os valores para um array de 16 bits (2 bytes).
+                    uint arrDataByte16BitsLength = numReceivedBytes / 2;
+                    uint16_t* arrDataByte16Bits = new uint16_t[arrDataByte16BitsLength];
 
-                    return arrDataByte;
+                    countIndex = 0;
+                    for (uint i = 0; i < numReceivedBytes; i += 2) {
+                        arrDataByte16Bits[countIndex] = (arrDataByte[i] << 8) + arrDataByte[i + 1];
+                        countIndex++;
+                    }
+
+                    //Retornando array de 16 bits.
+                    return arrDataByte16Bits;
+
                 }
 
                 break;

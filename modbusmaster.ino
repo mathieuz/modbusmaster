@@ -4,11 +4,11 @@
 ModbusMaster ms = ModbusMaster(20000);
 
 //Estrutura de Requisição.
-uint8_t deviceAddress    = 0x01; //Endereço do escravo.
+uint8_t deviceAddress    = 0x0B; //Endereço do escravo.
 uint8_t startAddressHigh = 0x00; //Byte do endereço inicial.
-uint8_t startAddressLow  = 0x02; //Byte do endereço inicial.
+uint8_t startAddressLow  = 0x1D; //Byte do endereço inicial.
 uint8_t lengthHigh       = 0x00; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
-uint8_t lengthLow        = 0x02; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
+uint8_t lengthLow        = 0x1F; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
 
 void setup() {
     delay(3000);
@@ -23,8 +23,8 @@ void loop() {
     delay(5000);
 
     //Requisição/pergunta do mestre.
-    uint16_t* arr = ms.readHoldingRegistersFunction03(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
-    uint length = ms.getLength16BitDataByte(lengthHigh, lengthLow);
+    uint8_t* arr = ms.readCoilsFunction01(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
+    uint length = ms.getLength8BitDataByte(lengthHigh, lengthLow);
 
     for (uint i = 0; i < length; i++) {
         Serial.println(arr[i], HEX);
