@@ -25,5 +25,6 @@ void setup() {
 void loop() {
     delay(5000);
 
-    ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength);
+    String res = ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength) ? "CRC da resposta foi validado." : "O CRC da resposta não está correto.";
+    Serial.println(res);
 }
