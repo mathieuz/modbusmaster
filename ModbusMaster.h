@@ -373,6 +373,111 @@ public:
         }
     }
 
+    bool writeMultipleRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow, uint16_t dataBytes[], uint dataBytesLength) {
+        const uint8_t functionCode = 0x10;
+
+        //Convertendo os elementos da array de 16 bits para 8 bits. 
+        uint lengthArrDataBytes8Bits = dataBytesLength * 2;
+        uint8_t arrDataBytes8Bits[lengthArrDataBytes8Bits];
+
+        //Avança os índices dos arrays nos laços de repetição.
+        uint countIndex = 0;
+
+        for (uint i = 0; i < lengthArrDataBytes8Bits; i++) {
+            arrDataBytes8Bits[countIndex] = (dataBytes[i] & 0xFF00) >> 8;
+            countIndex++;
+            arrDataBytes8Bits[countIndex] = dataBytes[i] & 0x00FF;
+            countIndex++;
+        }
+
+        //Determinando tamanho do byteCount
+        uint8_t byteCount = lengthArrDataBytes8Bits;
+
+        //Dimensionando o tamanho da array da requisição. Itens do array de databytes + 7 (deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow. byteCount)
+        uint lengthArrReqBuffer = lengthArrDataBytes8Bits + 7;
+
+        //Preenchendo o array com a requisição + os databytes a serem escritos.
+        uint8_t arrReqBuffer[lengthArrReqBuffer] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow, byteCount};
+
+        countIndex = 0;
+        for (uint8_t i = 7; i < lengthArrReqBuffer; i++) {
+            arrReqBuffer[i] = arrDataBytes8Bits[countIndex];
+            countIndex++;
+        }
+
+        //Calculando CRC do buffer de requisição:
+        uint16_t crcReq = 0;
+        uint8_t crcReqHigh = 0;
+        uint8_t crcReqLow = 0;
+
+        crcReq = this->calcCRC(arrReqBuffer, lengthArrReqBuffer);
+        crcReqLow = crcReq & 0x00FF;
+        crcReqHigh = (crcReq & 0xFF00) >> 8;
+
+        //Enviando requisição, databytes a serem escritos e CRC.
+        for (uint16_t i = 0; i < lengthArrReqBuffer; i++) {
+            Serial.write(arrReqBuffer[i]);
+        }
+
+        Serial.write(crcReqLow);
+        Serial.write(crcReqHigh);
+
+        //Dimensionando tamanho do buffer de resposta. Quantidade de endereços para serem lidos (cada byte) + 4 (deviceAddress, functionCode, CRC High, CRC Low)
+        uint16_t bufferLength = lengthArrDataBytes8Bits + 4;
+
+        /*
+        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
+        Serial.println("Aguardando resposta...\n");
+        */
+
+        while (true) {
+            if (Serial.available() > 0) {
+                uint8_t buffer[bufferLength];
+
+                //Preenchendo o buffer com a resposta da requisição.
+                Serial.readBytes(buffer, bufferLength);
+
+                //Recuperando o CRC da resposta:
+                uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
+                uint8_t crcResLow = buffer[bufferLength - 2];       //Penúltimo byte do buffer de resposta.
+                uint16_t crcRes = (crcResHigh << 8) + crcResLow;    //O CRC enviado da resposta em 16 bits.
+
+                //Recebe os itens do buffer de resposta.
+                uint8_t arrResBuffer[bufferLength - 2];
+
+                //Preenchendo arrResBuffer com os itens do buffer de resposta (tirando os dois últimos itens, que são bytes do crc da resposta).
+                for (uint i = 0; i < sizeof(arrResBuffer); i++) {
+                    arrResBuffer[i] = buffer[i];
+                }
+
+                //Calculando CRC da resposta.
+                uint16_t crcResCalc = this->calcCRC(arrResBuffer, sizeof(arrResBuffer));
+
+                uint8_t crcCalcLow = crcResCalc & 0x00FF;
+                uint8_t crcCalcHigh = (crcResCalc & 0xFF00) >> 8;
+                uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
+
+                /*
+                Serial.println("CRC da Resposta: ");
+                Serial.println(crcRes, HEX);
+
+                Serial.println("CRC Calculado: ");
+                Serial.println(crcCalc, HEX);
+                */
+
+                if (crcCalc == crcRes) {
+                    return true;
+
+                } else {
+                    return false;
+
+                }
+
+                break;
+            }
+        }
+    }
+
     uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
         return this->getNumDataBytes8Bits(lengthHigh, lengthLow);
     }

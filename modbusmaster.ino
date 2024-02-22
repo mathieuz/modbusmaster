@@ -4,11 +4,14 @@
 ModbusMaster ms = ModbusMaster(20000);
 
 //Estrutura de Requisição.
-uint8_t deviceAddress    = 0x0B; //Endereço do escravo.
+uint8_t deviceAddress    = 0x0F; //Endereço do escravo.
 uint8_t startAddressHigh = 0x00; //Byte do endereço inicial.
-uint8_t startAddressLow  = 0x1D; //Byte do endereço inicial.
+uint8_t startAddressLow  = 0x64; //Byte do endereço inicial.
 uint8_t lengthHigh       = 0x00; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
-uint8_t lengthLow        = 0x1F; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
+uint8_t lengthLow        = 0x02; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
+
+const uint dataBytesLength = 2;
+uint16_t arrDataBytes[dataBytesLength] = {0x000A, 0x0014};
 
 void setup() {
     delay(3000);
@@ -22,13 +25,6 @@ void setup() {
 void loop() {
     delay(5000);
 
-    //Requisição/pergunta do mestre.
-    uint8_t* arr = ms.readCoils(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
-    uint length = ms.getLength8BitDataByte(lengthHigh, lengthLow);
-
-    for (uint i = 0; i < length; i++) {
-        Serial.println(arr[i], HEX);
-    }
-
-    delete[] arr;
+    String res = ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength) ? "CRC da resposta foi validado." : "O CRC da resposta não está correto.";
+    Serial.println(res);
 }
