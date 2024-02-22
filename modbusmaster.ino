@@ -27,7 +27,7 @@ void loop() {
 
     uint8_t* arr = ms.readCoils(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
 
-    if (arr[0] != 0) {
+    if (arr != 0) {
         Serial.println("Resposta do escravo:");
 
         for (uint i = 0; i < ms.getLength8BitDataByte(lengthHigh, lengthLow); i++) {
