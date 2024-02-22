@@ -405,11 +405,27 @@ public:
             countIndex++;
         }
 
-
-        Serial.println("arrReqBuffer:");
+        Serial.println("Requisição:");
         for (uint8_t i = 0; i < lengthArrReqBuffer; i++) {
             Serial.println(arrReqBuffer[i], HEX);
         }
+        Serial.println("\n");
+
+        //Calculando CRC do buffer de requisição:
+
+        uint16_t crcReq = 0;
+        uint8_t crcReqHigh = 0;
+        uint8_t crcReqLow = 0;
+
+        crcReq = this->calcCRC(arrReqBuffer, lengthArrReqBuffer);
+        crcReqLow = crcReq & 0x00FF;
+        crcReqHigh = (crcReq & 0xFF00) >> 8;
+
+        Serial.println("CRC da requisição:");
+        Serial.print(crcReqLow, HEX);
+        Serial.print(crcReqHigh, HEX);
+        Serial.println("\n");
+
     }
 
     uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
