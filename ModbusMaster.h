@@ -485,6 +485,14 @@ public:
     uint getLength16BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
         return this->getNumDataBytes16Bits(lengthHigh, lengthLow) / 2; 
     }
+
+    uint getTimeout() {
+        return this->timeout;
+    }
+
+    void setTimeout(uint timeout) {
+        this->timeout = timeout;
+    }
 };
 
 #endif
