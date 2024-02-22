@@ -374,13 +374,15 @@ public:
     }
 
     void writeMultipleRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow, uint16_t dataBytes[], uint dataBytesLength) {
-        const uint8_t functionCode = 0x16;
+        const uint8_t functionCode = 0x10;
 
         //Convertendo os elementos da array de 16 bits para 8 bits. 
         uint lengthArrDataBytes8Bits = dataBytesLength * 2;
         uint8_t arrDataBytes8Bits[lengthArrDataBytes8Bits];
 
+        //Avança os índices dos arrays nos laços de repetição.
         uint countIndex = 0;
+
         for (uint i = 0; i < lengthArrDataBytes8Bits; i++) {
             arrDataBytes8Bits[countIndex] = (dataBytes[i] & 0xFF00) >> 8;
             countIndex++;
@@ -388,11 +390,26 @@ public:
             countIndex++;
         }
 
-        uint lengthArrReqBuffer = lengthArrDataBytes8Bits + 7; //Dimensionando o tamanho da array da requisição. Itens do array de databytes + 7 (deviceAddress, functionCode, startAddressHigh, startAddressLow, número de databytes para seguir.)
+        //Determinando tamanho do byteCount
+        uint8_t byteCount = lengthArrDataBytes8Bits;
 
-        Serial.println("Tamanho do buffer de requisição:");
-        Serial.println(lengthArrReqBuffer);
+        //Dimensionando o tamanho da array da requisição. Itens do array de databytes + 7 (deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow. byteCount)
+        uint lengthArrReqBuffer = lengthArrDataBytes8Bits + 7;
 
+        //Preenchendo o array com a requisição + os databytes a serem escritos.
+        uint8_t arrReqBuffer[lengthArrReqBuffer] = {deviceAddress, functionCode, startAddressHigh, startAddressLow, lengthHigh, lengthLow, byteCount};
+
+        countIndex = 0;
+        for (uint8_t i = 7; i < lengthArrReqBuffer; i++) {
+            arrReqBuffer[i] = arrDataBytes8Bits[countIndex];
+            countIndex++;
+        }
+
+
+        Serial.println("arrReqBuffer:");
+        for (uint8_t i = 0; i < lengthArrReqBuffer; i++) {
+            Serial.println(arrReqBuffer[i], HEX);
+        }
     }
 
     uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
