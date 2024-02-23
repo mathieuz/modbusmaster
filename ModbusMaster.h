@@ -209,7 +209,9 @@ public:
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
 
-        while (true) {
+        uint tempoMaximoResposta = millis();
+
+        while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
             if (Serial.available() > 0) {
                 uint8_t buffer[bufferLength];
 
@@ -270,11 +272,14 @@ public:
                     //Retornando array de 16 bits.
                     return arrDataByte16Bits;
 
-                }
+                } else {
 
-                break;
+                    break;
+                }
             }
         }
+
+        return nullptr;
     }
 
     uint16_t* readInputRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
