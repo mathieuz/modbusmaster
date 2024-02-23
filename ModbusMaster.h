@@ -104,9 +104,11 @@ public:
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
 
+        /*
         Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
+        */
 
         uint tempoMaximoResposta = millis();
 
@@ -205,9 +207,11 @@ public:
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
 
+        /*
         Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
+        */
 
         uint tempoMaximoResposta = millis();
 
@@ -306,9 +310,11 @@ public:
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
 
+        /*
         Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
+        */
 
         uint tempoMaximoResposta = millis();
 
@@ -413,9 +419,11 @@ public:
         //Tamanho do buffer/resposta do escravo. Número de data bytes + 5 (endereço do escravo, código função, byte count, crcHigh, crcLow)
         uint16_t bufferLength = numReceivedBytes + 5;
 
+        /*
         Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
+        */
 
         uint tempoMaximoResposta = millis();
 
@@ -542,8 +550,10 @@ public:
         //Dimensionando tamanho do buffer de resposta. Quantidade de endereços para serem lidos (cada byte) + 4 (deviceAddress, functionCode, CRC High, CRC Low)
         uint16_t bufferLength = lengthArrDataBytes8Bits + 4;
 
+        /*
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
+        */
 
         uint tempoMaximoResposta = millis();
 
