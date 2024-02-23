@@ -4,15 +4,11 @@
 ModbusMaster ms = ModbusMaster(10000);
 
 //Estrutura de Requisição.
-uint8_t deviceAddress    = 0x0F; //Endereço do escravo.
+uint8_t deviceAddress    = 0x0B; //Endereço do escravo.
 uint8_t startAddressHigh = 0x00; //Byte do endereço inicial.
-uint8_t startAddressLow  = 0x64; //Byte do endereço inicial.
+uint8_t startAddressLow  = 0x7A; //Byte do endereço inicial.
 uint8_t lengthHigh       = 0x00; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
-uint8_t lengthLow        = 0x02; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
-
-//Array com os databytes a serem escritos + tamanho do array.
-const uint dataBytesLength = 2;
-uint16_t arrDataBytes[dataBytesLength] = {0x000A, 0x0014};
+uint8_t lengthLow        = 0x1C; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
 
 void setup() {
     delay(3000);
@@ -26,6 +22,22 @@ void setup() {
 void loop() {
     delay(2000);
 
-    bool res = ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength);
-    Serial.println(res ? "true" : "false");
+    uint8_t* arr = ms.readInputStatus(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
+
+    if (arr != 0) {
+        Serial.println("Resposta do escravo:");
+
+        for (uint i = 0; i < ms.getLength8BitDataByte(lengthHigh, lengthLow); i++) {
+            Serial.print(arr[i], HEX);
+            Serial.print(" ");
+        }
+
+        Serial.println("\n");
+
+    } else {
+        Serial.println("Não houve resposta do escravo.\n");
+    }
+
+    delete[] arr;
+
 }
