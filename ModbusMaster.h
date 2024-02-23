@@ -108,7 +108,9 @@ public:
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
 
-        while (true) {
+        uint tempoMaximoResposta = millis();
+
+        while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
             if (Serial.available() > 0) {
                 uint8_t buffer[bufferLength];
 
@@ -162,11 +164,15 @@ public:
                     */
 
                     return arrDataByte;
-                }
 
-                break;
+                } else {
+
+                    break;
+                }
             }
         }
+
+        return nullptr;
     }
 
     uint16_t* readHoldingRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
@@ -203,7 +209,9 @@ public:
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
 
-        while (true) {
+        uint tempoMaximoResposta = millis();
+
+        while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
             if (Serial.available() > 0) {
                 uint8_t buffer[bufferLength];
 
@@ -264,11 +272,14 @@ public:
                     //Retornando array de 16 bits.
                     return arrDataByte16Bits;
 
-                }
+                } else {
 
-                break;
+                    break;
+                }
             }
         }
+
+        return nullptr;
     }
 
     uint16_t* readInputRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow) {
@@ -305,7 +316,9 @@ public:
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
 
-        while (true) {
+        uint tempoMaximoResposta = millis();
+
+        while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
             if (Serial.available() > 0) {
                 uint8_t buffer[bufferLength];
 
@@ -366,11 +379,14 @@ public:
                     //Retornando array de 16 bits.
                     return arrDataByte16Bits;
 
-                }
+                } else {
 
-                break;
+                    break;
+                }
             }
         }
+
+        return nullptr;
     }
 
     bool writeMultipleRegisters(uint8_t deviceAddress, uint8_t startAddressHigh, uint8_t startAddressLow, uint8_t lengthHigh, uint8_t lengthLow, uint16_t dataBytes[], uint dataBytesLength) {
@@ -425,12 +441,12 @@ public:
         //Dimensionando tamanho do buffer de resposta. Quantidade de endereços para serem lidos (cada byte) + 4 (deviceAddress, functionCode, CRC High, CRC Low)
         uint16_t bufferLength = lengthArrDataBytes8Bits + 4;
 
-        /*
         Serial.println(bufferLength);     //Tamanho do buffer de resposta.
         Serial.println("Aguardando resposta...\n");
-        */
 
-        while (true) {
+        uint tempoMaximoResposta = millis();
+
+        while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
             if (Serial.available() > 0) {
                 uint8_t buffer[bufferLength];
 
@@ -469,13 +485,13 @@ public:
                     return true;
 
                 } else {
-                    return false;
-
+                    
+                    break;
                 }
-
-                break;
             }
         }
+
+        return false;
     }
 
     uint getLength8BitDataByte(uint8_t lengthHigh, uint8_t lengthLow) {
