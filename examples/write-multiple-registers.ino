@@ -26,6 +26,8 @@ void setup() {
 void loop() {
     delay(2000);
 
+    Serial.println("Aguardando resposta do escravo...\n");
+    
     bool res = ms.writeMultipleRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow, arrDataBytes, dataBytesLength);
     Serial.println(res ? "true" : "false");
 }

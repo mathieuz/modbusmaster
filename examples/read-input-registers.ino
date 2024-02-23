@@ -22,6 +22,7 @@ void setup() {
 void loop() {
     delay(2000);
 
+    Serial.println("Aguardando resposta do escravo...\n");
     uint16_t* arr = ms.readInputRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
 
     if (arr != 0) {
