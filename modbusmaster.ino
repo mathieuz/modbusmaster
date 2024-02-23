@@ -6,9 +6,9 @@ ModbusMaster ms = ModbusMaster(10000);
 //Estrutura de Requisição.
 uint8_t deviceAddress    = 0x0B; //Endereço do escravo.
 uint8_t startAddressHigh = 0x00; //Byte do endereço inicial.
-uint8_t startAddressLow  = 0x6F; //Byte do endereço inicial.
+uint8_t startAddressLow  = 0x0A; //Byte do endereço inicial.
 uint8_t lengthHigh       = 0x00; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
-uint8_t lengthLow        = 0x03; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
+uint8_t lengthLow        = 0x01; //Byte da quantidade de endereços a serem lidos (a partir do endereço inicial).
 
 const uint dataBytesLength = 2;
 uint16_t arrDataBytes[dataBytesLength] = {0x000A, 0x0014};
@@ -25,7 +25,7 @@ void setup() {
 void loop() {
     delay(2000);
 
-    uint16_t* arr = ms.readHoldingRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
+    uint16_t* arr = ms.readInputRegisters(deviceAddress, startAddressHigh, startAddressLow, lengthHigh, lengthLow);
 
     if (arr != 0) {
         Serial.println("Resposta do escravo:");
