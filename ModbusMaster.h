@@ -6,7 +6,7 @@ class ModbusMaster
 
 private:
     uint timeout;
-    HardwareSerial *serial;
+    HardwareSerial* _serial;
 
     uint16_t calcCRC(uint8_t buffer[], uint8_t length) {
         uint16_t crc = 0xFFFF;
@@ -69,8 +69,8 @@ private:
     }
 
 public:
-    ModbusMaster(/*HardwareSerial serial,*/ uint timeout) {
-        //this->serial = &serial;
+    ModbusMaster(HardwareSerial &serial, uint timeout) {
+        _serial = &serial;
         this->timeout = timeout;
     }
 
@@ -89,14 +89,14 @@ public:
         crcReqLow = (crcReq & 0xFF00) >> 8;
 
         //Enviando requisição + CRC
-        Serial.write(deviceAddress);
-        Serial.write(functionCode);
-        Serial.write(startAddressHigh);
-        Serial.write(startAddressLow);
-        Serial.write(lengthHigh);
-        Serial.write(lengthLow);
-        Serial.write(crcReqHigh);
-        Serial.write(crcReqLow);
+        _serial->write(deviceAddress);
+        _serial->write(functionCode);
+        _serial->write(startAddressHigh);
+        _serial->write(startAddressLow);
+        _serial->write(lengthHigh);
+        _serial->write(lengthLow);
+        _serial->write(crcReqHigh);
+        _serial->write(crcReqLow);
 
         //Calculando quantos data bytes virá na resposta.
         uint16_t numReceivedBytes = this->getNumDataBytes8Bits(lengthHigh, lengthLow);
@@ -105,19 +105,19 @@ public:
         uint16_t bufferLength = numReceivedBytes + 5;
 
         /*
-        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
-        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
-        Serial.println("Aguardando resposta...\n");
+        _serial->println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        _serial->println(bufferLength);     //Tamanho do buffer de resposta.
+        _serial->println("Aguardando resposta...\n");
         */
 
         uint tempoMaximoResposta = millis();
 
         while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
-            if (Serial.available() > 0) {
+            if (_serial->available() > 0) {
                 uint8_t buffer[bufferLength];
 
                 //Preenchendo o buffer com a resposta da requisição.
-                Serial.readBytes(buffer, bufferLength);
+                _serial->readBytes(buffer, bufferLength);
 
                 //Recuperando o CRC da resposta:
                 uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
@@ -140,11 +140,11 @@ public:
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
                 /*
-                Serial.println("CRC da Resposta: ");
-                Serial.println(crcRes, HEX);
+                _serial->println("CRC da Resposta: ");
+                _serial->println(crcRes, HEX);
 
-                Serial.println("CRC Calculado: ");
-                Serial.println(crcCalc, HEX);
+                _serial->println("CRC Calculado: ");
+                _serial->println(crcCalc, HEX);
                 */
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
@@ -159,9 +159,9 @@ public:
                     }
 
                     /*
-                    Serial.println("Data Bytes: ");
+                    _serial->println("Data Bytes: ");
                     for (uint i = 0; i < sizeof(arrDataByte); i++) {
-                      Serial.println(arrDataByte[i], HEX);
+                      _serial->println(arrDataByte[i], HEX);
                     }
                     */
 
@@ -192,14 +192,14 @@ public:
         crcReqLow = (crcReq & 0xFF00) >> 8;
 
         //Enviando requisição + CRC
-        Serial.write(deviceAddress);
-        Serial.write(functionCode);
-        Serial.write(startAddressHigh);
-        Serial.write(startAddressLow);
-        Serial.write(lengthHigh);
-        Serial.write(lengthLow);
-        Serial.write(crcReqHigh);
-        Serial.write(crcReqLow);
+        _serial->write(deviceAddress);
+        _serial->write(functionCode);
+        _serial->write(startAddressHigh);
+        _serial->write(startAddressLow);
+        _serial->write(lengthHigh);
+        _serial->write(lengthLow);
+        _serial->write(crcReqHigh);
+        _serial->write(crcReqLow);
 
         //Calculando quantos data bytes virá na resposta.
         uint16_t numReceivedBytes = this->getNumDataBytes8Bits(lengthHigh, lengthLow);
@@ -208,19 +208,19 @@ public:
         uint16_t bufferLength = numReceivedBytes + 5;
 
         /*
-        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
-        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
-        Serial.println("Aguardando resposta...\n");
+        _serial->println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        _serial->println(bufferLength);     //Tamanho do buffer de resposta.
+        _serial->println("Aguardando resposta...\n");
         */
 
         uint tempoMaximoResposta = millis();
 
         while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
-            if (Serial.available() > 0) {
+            if (_serial->available() > 0) {
                 uint8_t buffer[bufferLength];
 
                 //Preenchendo o buffer com a resposta da requisição.
-                Serial.readBytes(buffer, bufferLength);
+                _serial->readBytes(buffer, bufferLength);
 
                 //Recuperando o CRC da resposta:
                 uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
@@ -243,11 +243,11 @@ public:
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
                 /*
-                Serial.println("CRC da Resposta: ");
-                Serial.println(crcRes, HEX);
+                _serial->println("CRC da Resposta: ");
+                _serial->println(crcRes, HEX);
 
-                Serial.println("CRC Calculado: ");
-                Serial.println(crcCalc, HEX);
+                _serial->println("CRC Calculado: ");
+                _serial->println(crcCalc, HEX);
                 */
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
@@ -262,9 +262,9 @@ public:
                     }
 
                     /*
-                    Serial.println("Data Bytes: ");
+                    _serial->println("Data Bytes: ");
                     for (uint i = 0; i < sizeof(arrDataByte); i++) {
-                      Serial.println(arrDataByte[i], HEX);
+                      _serial->println(arrDataByte[i], HEX);
                     }
                     */
 
@@ -295,14 +295,14 @@ public:
         crcReqHigh = (crcReq & 0xFF00) >> 8;
 
         //Enviando requisição + CRC
-        Serial.write(deviceAddress);
-        Serial.write(functionCode);
-        Serial.write(startAddressHigh);
-        Serial.write(startAddressLow);
-        Serial.write(lengthHigh);
-        Serial.write(lengthLow);
-        Serial.write(crcReqLow);
-        Serial.write(crcReqHigh);
+        _serial->write(deviceAddress);
+        _serial->write(functionCode);
+        _serial->write(startAddressHigh);
+        _serial->write(startAddressLow);
+        _serial->write(lengthHigh);
+        _serial->write(lengthLow);
+        _serial->write(crcReqLow);
+        _serial->write(crcReqHigh);
 
         //Calculando quantos data bytes virá na resposta.
         uint16_t numReceivedBytes = this->getNumDataBytes16Bits(lengthHigh, lengthLow);
@@ -311,19 +311,19 @@ public:
         uint16_t bufferLength = numReceivedBytes + 5;
 
         /*
-        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
-        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
-        Serial.println("Aguardando resposta...\n");
+        _serial->println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        _serial->println(bufferLength);     //Tamanho do buffer de resposta.
+        _serial->println("Aguardando resposta...\n");
         */
 
         uint tempoMaximoResposta = millis();
 
         while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
-            if (Serial.available() > 0) {
+            if (_serial->available() > 0) {
                 uint8_t buffer[bufferLength];
 
                 //Preenchendo o buffer com a resposta da requisição.
-                Serial.readBytes(buffer, bufferLength);
+                _serial->readBytes(buffer, bufferLength);
 
                 //Recuperando o CRC da resposta:
                 uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
@@ -346,11 +346,11 @@ public:
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
                 /*
-                Serial.println("CRC da Resposta: ");
-                Serial.println(crcRes, HEX);
+                _serial->println("CRC da Resposta: ");
+                _serial->println(crcRes, HEX);
 
-                Serial.println("CRC Calculado: ");
-                Serial.println(crcCalc, HEX);
+                _serial->println("CRC Calculado: ");
+                _serial->println(crcCalc, HEX);
                 */
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
@@ -404,14 +404,14 @@ public:
         crcReqHigh = (crcReq & 0xFF00) >> 8;
 
         //Enviando requisição + CRC
-        Serial.write(deviceAddress);
-        Serial.write(functionCode);
-        Serial.write(startAddressHigh);
-        Serial.write(startAddressLow);
-        Serial.write(lengthHigh);
-        Serial.write(lengthLow);
-        Serial.write(crcReqLow);
-        Serial.write(crcReqHigh);
+        _serial->write(deviceAddress);
+        _serial->write(functionCode);
+        _serial->write(startAddressHigh);
+        _serial->write(startAddressLow);
+        _serial->write(lengthHigh);
+        _serial->write(lengthLow);
+        _serial->write(crcReqLow);
+        _serial->write(crcReqHigh);
 
         //Calculando quantos data bytes virá na resposta.
         uint16_t numReceivedBytes = this->getNumDataBytes16Bits(lengthHigh, lengthLow);
@@ -420,19 +420,19 @@ public:
         uint16_t bufferLength = numReceivedBytes + 5;
 
         /*
-        Serial.println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
-        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
-        Serial.println("Aguardando resposta...\n");
+        _serial->println(numReceivedBytes); //Número de data bytes a serem recebidos na resposta.
+        _serial->println(bufferLength);     //Tamanho do buffer de resposta.
+        _serial->println("Aguardando resposta...\n");
         */
 
         uint tempoMaximoResposta = millis();
 
         while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
-            if (Serial.available() > 0) {
+            if (_serial->available() > 0) {
                 uint8_t buffer[bufferLength];
 
                 //Preenchendo o buffer com a resposta da requisição.
-                Serial.readBytes(buffer, bufferLength);
+                _serial->readBytes(buffer, bufferLength);
 
                 //Recuperando o CRC da resposta:
                 uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
@@ -455,11 +455,11 @@ public:
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
                 /*
-                Serial.println("CRC da Resposta: ");
-                Serial.println(crcRes, HEX);
+                _serial->println("CRC da Resposta: ");
+                _serial->println(crcRes, HEX);
 
-                Serial.println("CRC Calculado: ");
-                Serial.println(crcCalc, HEX);
+                _serial->println("CRC Calculado: ");
+                _serial->println(crcCalc, HEX);
                 */
 
                 //Se o CRC calculado for igual ao CRC da resposta, não houve erros ou perda de informação dos dados recebidos.
@@ -541,28 +541,28 @@ public:
 
         //Enviando requisição, databytes a serem escritos e CRC.
         for (uint16_t i = 0; i < lengthArrReqBuffer; i++) {
-            Serial.write(arrReqBuffer[i]);
+            _serial->write(arrReqBuffer[i]);
         }
 
-        Serial.write(crcReqLow);
-        Serial.write(crcReqHigh);
+        _serial->write(crcReqLow);
+        _serial->write(crcReqHigh);
 
         //Dimensionando tamanho do buffer de resposta. Quantidade de endereços para serem lidos (cada byte) + 4 (deviceAddress, functionCode, CRC High, CRC Low)
         uint16_t bufferLength = lengthArrDataBytes8Bits + 4;
 
         /*
-        Serial.println(bufferLength);     //Tamanho do buffer de resposta.
-        Serial.println("Aguardando resposta...\n");
+        _serial->println(bufferLength);     //Tamanho do buffer de resposta.
+        _serial->println("Aguardando resposta...\n");
         */
 
         uint tempoMaximoResposta = millis();
 
         while ((millis() - tempoMaximoResposta) < this->getTimeout()) {
-            if (Serial.available() > 0) {
+            if (_serial->available() > 0) {
                 uint8_t buffer[bufferLength];
 
                 //Preenchendo o buffer com a resposta da requisição.
-                Serial.readBytes(buffer, bufferLength);
+                _serial->readBytes(buffer, bufferLength);
 
                 //Recuperando o CRC da resposta:
                 uint8_t crcResHigh = buffer[bufferLength - 1];      //Último byte do buffer de resposta.
@@ -585,11 +585,11 @@ public:
                 uint16_t crcCalc = (crcCalcHigh << 8) + crcCalcLow; //CRC calculado.
 
                 /*
-                Serial.println("CRC da Resposta: ");
-                Serial.println(crcRes, HEX);
+                _serial->println("CRC da Resposta: ");
+                _serial->println(crcRes, HEX);
 
-                Serial.println("CRC Calculado: ");
-                Serial.println(crcCalc, HEX);
+                _serial->println("CRC Calculado: ");
+                _serial->println(crcCalc, HEX);
                 */
 
                 if (crcCalc == crcRes) {
