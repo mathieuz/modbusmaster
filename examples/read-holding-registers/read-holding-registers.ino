@@ -1,5 +1,12 @@
 #include <ModbusMaster.h>
 
+/*
+HardwareSerial DEFAULT_SERIAL_CONSOLE //Serial padrão.
+HardwareSerial SERIAL_UART0
+HardwareSerial SERIAL_UART1 .
+HardwareSerial SERIAL_UART2
+*/
+
 //Instância do Serial
 HardwareSerial hs(SERIAL_UART1);
 
