@@ -1,7 +1,10 @@
 #include <ModbusMaster.h>
 
+//Instância do Serial
+HardwareSerial hs(SERIAL_UART1);
+
 //Instância do ModbusMaster.
-ModbusMaster ms = ModbusMaster(10000);
+ModbusMaster ms = ModbusMaster(rs, 10000);
 
 //Estrutura de Requisição.
 uint8_t deviceAddress    = 0x11; //Endereço do escravo.
